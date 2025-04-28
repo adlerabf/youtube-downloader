@@ -2,7 +2,7 @@
 
 This is a simple yet efficient video downloader built with Python, using the powerful [yt-dlp](https://github.com/yt-dlp/yt-dlp) library. The application allows users to easily download YouTube videos by providing a link and selecting a folder to save the video.
 
-[Click here]('https://youtubedownloader.streamlit.app/') to open the app.
+[Click here](https://youtubedownloader.streamlit.app/) to open the app.
 
 ## Purpose
 
