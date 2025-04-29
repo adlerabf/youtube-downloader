@@ -1,94 +1,71 @@
 import streamlit as st
 import yt_dlp
-import os
 
-# Function to download the video
+# Função para baixar o vídeo
 def download_video(link, folder):
     ydl_opts = {
         'format': 'bestvideo+bestaudio',
         'merge_output_format': 'mp4',
-        'outtmpl': f'{folder}/%(title)s.%(ext)s',  # Saves the video in the chosen folder
+        'outtmpl': f'{folder}/%(title)s.%(ext)s',  # Salva o vídeo na pasta escolhida
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(link, download=True)
-        filename = ydl.prepare_filename(info)
-        if filename.endswith('.webm'):
-            filename = filename.replace('.webm', '.mp4')  # Adjust filename if necessary
-        return filename
+        ydl.download([link])
 
-# Function to display texts based on the selected language
+# Função para exibir textos com base no idioma escolhido
 def get_text(language):
     if language == "en-US":
         return {
             "title": "YouTube Video Downloader",
             "description": "Enter the YouTube video link and the folder where you want to save the file.",
             "video_link": "Video Link",
-            "save_folder": "Folder to Save (optional when online)",
+            "save_folder": "Folder to Save",
             "download_button": "Download Video",
             "downloading": "Downloading video...",
-            "success": "Video successfully downloaded!",
+            "success": "Video successfully downloaded to",
             "error": "Error downloading the video:",
-            "provide_info": "Please provide the video link."
+            "provide_info": "Please provide both the video link and the folder to save."
         }
     else:  # pt-BR
         return {
             "title": "Downloader de Vídeo do YouTube",
             "description": "Informe o link do vídeo do YouTube e a pasta onde deseja salvar o arquivo.",
             "video_link": "Link do Vídeo",
-            "save_folder": "Pasta para Salvar (opcional se estiver online)",
+            "save_folder": "Pasta para Salvar",
             "download_button": "Baixar Vídeo",
             "downloading": "Baixando vídeo...",
-            "success": "Vídeo baixado com sucesso!",
+            "success": "Vídeo baixado com sucesso para",
             "error": "Erro ao baixar o vídeo:",
-            "provide_info": "Por favor, forneça o link do vídeo."
+            "provide_info": "Por favor, forneça tanto o link do vídeo quanto a pasta para salvar."
         }
 
-# Streamlit Interface
+# Interface Streamlit
+# Escolha do idioma
 language = st.selectbox("Select Language", ("pt-BR", "en-US"))
 
-# Get text based on selected language
+# Obter o texto de acordo com o idioma selecionado
 text = get_text(language)
 
-# App title
+# Título do aplicativo
 st.title(text["title"])
 
-# Description
+# Descrição
 st.markdown(text["description"])
 
-# Video link input
+# Input de link
 url = st.text_input(text["video_link"], "")
 
-# Folder input
+# Input de diretório
 folder = st.text_input(text["save_folder"], "")
 
-# Button to start downloading
+# Botão para iniciar o download
 if st.button(text["download_button"]):
-    if url:
+    if url and folder:
         try:
             st.write(text["downloading"])
-
-            # Define local folder or fallback
-            save_folder = folder if folder else "."
-
-            # Download video
-            downloaded_file_path = download_video(url, save_folder)
-
-            # Show success message
-            st.success(f"{text['success']}")
-
-            # Offer download if file exists
-            if os.path.exists(downloaded_file_path):
-                with open(downloaded_file_path, "rb") as f:
-                    st.download_button(
-                        label="Clique aqui para baixar o vídeo",
-                        data=f,
-                        file_name=os.path.basename(downloaded_file_path),
-                        mime="video/mp4"
-                    )
-
+            download_video(url, folder)
+            st.success(f'{text["success"]} {folder}')
         except Exception as e:
             st.error(f"{text['error']} {e}")
     else:
         st.error(text["provide_info"])
-
