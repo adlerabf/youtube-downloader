@@ -26,4 +26,5 @@ I developed this program to help my wife download YouTube videos for personal us
    
 In the terminal type:
 
-streamlit run app.py
+   ```bash
+   streamlit run app.py
